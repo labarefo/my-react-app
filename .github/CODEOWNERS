@@ -1,0 +1,4 @@
+* @labarefo
+*.js @labarefo
+*.yml @bala
+/public/ @labarefo
