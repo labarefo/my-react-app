@@ -1,6 +1,7 @@
 * @labarefo
 *.js @labarefo
-*.yml @bala
+*.yml @labarefo
+*.xml @kudhybi
 /public/ @labarefo
 
 
