@@ -76,3 +76,8 @@ npx prettier --check "**/*.js"
 ## format
 npx prettier --write "**/*.js"
 
+# Surge
+## generate token
+surge token
+## ask login
+surge login
