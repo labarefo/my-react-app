@@ -19,6 +19,11 @@
     "prettier:check": "prettier --check \"**/*.{js, jsx}\"",
     "prettier:format": "prettier --write \"**/*.{js, jsx}\""
   },
+  "husky": {
+    "hooks": {
+      "prepare-commit-msg": "exec < /dev/tty && npx cz --hook || true"
+    }
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -38,6 +43,9 @@
     ]
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.7.1",
+    "@commitlint/config-conventional": "^17.7.0",
+    "husky": "^8.0.3",
     "prettier": "3.0.2",
     "semantic-release": "^21.1.1"
   }
