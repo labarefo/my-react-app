@@ -1,0 +1,70 @@
+name: CI
+on:
+  pull_request:
+    branches: [ develop, master ]
+  push:
+    branches: [ develop, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3.5.3
+
+    - name: Cache node modules
+      uses: actions/cache@v3.3.1
+      with:
+        path: ~/.npm
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-node-  
+
+    - name: use NodeJs
+      uses: actions/setup-node@v1
+      with:
+        node-version: '14.x'
+
+    - name: install dependencies
+      run: npm install
+
+    - name: Prettier check
+      run: npm run prettier:check
+    - name: Coverage
+      run: npm test -- --coverage
+      env:
+        CI: true
+
+    - name: Upload Test Coverage
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: code-coverage
+        path: coverage
+
+    - name: Build Project
+      if: github.event_name == 'push'
+      run: npm run build
+
+    - name: Upload Build
+      if: github.event_name == 'push'
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: build
+        path: build
+
+    - name: Create a release
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      uses: actions/create-release@v1.0.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Deploy to Staging
+      if: github.event_name == 'push'
+      run: npx surge --project ./build --domain https://my-react-app-staging.surge.sh
+      env:
+        SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
+        SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
